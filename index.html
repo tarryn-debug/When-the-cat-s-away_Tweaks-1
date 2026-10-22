@@ -490,6 +490,39 @@
       width: 52.5%;
     }
 
+    /* INTRO ENTRANCE: a translucent box flashes over the pin cluster, then the overlay cuts in and the card zooms up */
+    .intro-box {
+      position: absolute;
+      left: 41.8%;
+      top: 26.8%;
+      width: 25.3%;
+      height: 25.3%;
+      background: rgba(20, 31, 82, 0.44);
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-box.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Overlay appears instantly (no fade in); it still fades out when closed */
+    #intro-modal.active {
+      transition: none;
+    }
+
+    #intro-modal.active .center-modal {
+      animation: introCardZoom 0.23s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+    }
+
+    @keyframes introCardZoom {
+      from { transform: scale(0.3); }
+      to   { transform: scale(1); }
+    }
+
     .center-modal {
       background: #ffffff;
       border-radius: 8px;
@@ -646,6 +679,9 @@
       </button>
     </main>
 
+    <!-- INTRO ENTRANCE BOX -->
+    <div class="intro-box" id="intro-box"></div>
+
     <!-- INTRO OVERLAY MODAL -->
     <div class="dark-overlay" id="intro-modal">
       <div class="center-modal">
@@ -772,6 +808,8 @@
 
     const viewedMap = new Set();
     let activePin = null;
+    const introBox = document.getElementById('intro-box');
+    let introTimers = [];
 
     // Tangent points from an external point (px, py) to a circle (cx, cy, r)
     function tangentPoints(px, py, cx, cy, r) {
@@ -906,9 +944,17 @@
         }, index * 120);
       });
 
-      setTimeout(() => {
-        introModal.classList.add('active');
-      }, pins.length * 120 + 300);
+      // After the last pin: box flashes in, holds briefly, then the overlay cuts in and the card zooms up
+      const boxDelay = pins.length * 120 + 500;
+      const boxHold = 230;
+      introTimers.forEach(clearTimeout);
+      introTimers = [
+        setTimeout(() => introBox.classList.add('show'), boxDelay),
+        setTimeout(() => {
+          introBox.classList.remove('show');
+          introModal.classList.add('active');
+        }, boxDelay + boxHold)
+      ];
     });
 
     // 2. CLICK CONTINUE ON INTRO OVERLAY
@@ -975,6 +1021,8 @@
 
     document.getElementById('btn-reset').addEventListener('click', () => {
       viewedMap.clear();
+      introTimers.forEach(clearTimeout);
+      introBox.classList.remove('show');
       document.querySelectorAll('.pin-btn').forEach(p => {
         p.classList.remove('viewed');
         p.classList.remove('animated');
