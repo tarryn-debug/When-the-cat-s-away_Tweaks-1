@@ -523,6 +523,17 @@
       to   { transform: scale(1); }
     }
 
+    /* Pre-warm: while the pins animate, the overlay is painted at ~1% opacity so the browser has already
+       rasterised the card and badge. Without this the first paint stalls and the zoom is skipped. */
+    #intro-modal.warm {
+      opacity: 0.01;
+      transition: none;
+    }
+
+    #intro-modal .center-modal {
+      will-change: transform;
+    }
+
     .center-modal {
       background: #ffffff;
       border-radius: 8px;
@@ -948,10 +959,14 @@
       const boxDelay = pins.length * 120 + 500;
       const boxHold = 230;
       introTimers.forEach(clearTimeout);
+      introModal.classList.add('warm');
+      const badge = introModal.querySelector('.modal-badge-graphic');
+      if (badge && badge.decode) badge.decode().catch(() => {});
       introTimers = [
         setTimeout(() => introBox.classList.add('show'), boxDelay),
         setTimeout(() => {
           introBox.classList.remove('show');
+          introModal.classList.remove('warm');
           introModal.classList.add('active');
         }, boxDelay + boxHold)
       ];
@@ -1023,6 +1038,7 @@
       viewedMap.clear();
       introTimers.forEach(clearTimeout);
       introBox.classList.remove('show');
+      introModal.classList.remove('warm');
       document.querySelectorAll('.pin-btn').forEach(p => {
         p.classList.remove('viewed');
         p.classList.remove('animated');
