@@ -438,8 +438,6 @@
     .spotlight-view-container.layout-left .spotlight-stack {
       display: block;
       padding-left: 0;
-      /* A leftover transform (or its 0.3s transition) from another layer would make the stack the
-         containing block for the card and circle, so the wedge got measured against the wrong box */
       transform: none !important;
       transition: none;
     }
@@ -473,29 +471,27 @@
       transition: none;
     }
 
-    /* Zoom the map inside the frame so the grey fills right up to the thin white border.
-       The origin is the pin's position, so Turkey stays under the pin while the white ring is pushed out. */
     .spotlight-view-container.layout-left.zoom-map .spotlight-circle-frame img.spotlight-map-bg {
       transform: scale(1.17);
       transform-origin: 50.7% 51.7%;
     }
 
-    /* Wider card (Yemen) */
     .spotlight-view-container.layout-left.card-wide .dialog-card {
       width: 45%;
     }
 
-    /* Widest card (South China Sea) */
     .spotlight-view-container.layout-left.card-wider .dialog-card {
       width: 52.5%;
     }
 
+    /* CENTERED INSTRUCTION CARD MATCHING IMAGE 1 */
     .center-modal {
       background: #ffffff;
-      border-radius: 8px;
-      padding: 3.25rem 2.5rem 2.25rem;
+      border-radius: 0; /* Sharp corners matching Image 1 */
+      padding: 3.5rem 3.5rem 2.5rem;
       text-align: center;
-      max-width: 520px;
+      width: 720px; /* Widened box so text sits over 3 lines */
+      max-width: 92%;
       box-shadow: 0 12px 32px rgba(0,0,0,0.4);
       position: relative;
       margin-top: 2rem;
@@ -503,20 +499,20 @@
 
     .modal-badge-graphic {
       position: absolute;
-      top: -42px;
+      top: -60px;
       left: 50%;
       transform: translateX(-50%);
-      width: 84px;
-      height: 84px;
+      width: 120px;
+      height: 120px;
       z-index: 10;
     }
 
     .center-modal h2 {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: #222222;
-      margin-bottom: 1.75rem;
+      margin-bottom: 2rem;
       font-weight: 400;
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     .action-btn {
@@ -577,6 +573,8 @@
       .btn-start { align-self: center; width: 100%; max-width: 200px; }
       .cover-illustration { width: 60%; }
       .dialog-card { width: 95%; padding: 1.25rem; }
+      .center-modal { width: 92%; padding: 2.5rem 1.5rem 1.5rem; }
+      .modal-badge-graphic { width: 90px; height: 90px; top: -45px; }
       .spotlight-circle-frame { width: 90px; height: 90px; }
       .spotlight-view-container.layout-left .spotlight-stack { padding-left: 1rem; }
       .spotlight-view-container.layout-left .dialog-card { width: 90%; left: 5%; }
@@ -646,7 +644,7 @@
       </button>
     </main>
 
-    <!-- INTRO OVERLAY MODAL -->
+    <!-- INTRO OVERLAY MODAL (UPDATED TO Sharp Corners + 3-line Text Width) -->
     <div class="dark-overlay" id="intro-modal">
       <div class="center-modal">
         <img src="Resources/PastedVector-34.svg" alt="Instruction House Graphic" class="modal-badge-graphic">
@@ -655,7 +653,7 @@
       </div>
     </div>
 
-    <!-- SPOTLIGHT OVERLAY MODAL -->
+    <!-- SPOTLIGHT OVERLAY MODAL FOR UKRAINE -->
     <div class="dark-overlay" id="content-modal">
       <div class="spotlight-view-container" id="spotlight-container">
         <div class="spotlight-stack" id="spotlight-stack">
@@ -666,7 +664,6 @@
               <img src="Resources/PastedVector-30.svg" alt="" class="spotlight-triangle-bg">
             </div>
 
-            <!-- NEW: diagonal wedge (Turkey/Syria layout only) -->
             <svg class="spotlight-wedge" id="spotlight-wedge" aria-hidden="true">
               <polygon id="spotlight-wedge-poly" fill="#141F52"></polygon>
             </svg>
@@ -773,7 +770,6 @@
     const viewedMap = new Set();
     let activePin = null;
 
-    // Tangent points from an external point (px, py) to a circle (cx, cy, r)
     function tangentPoints(px, py, cx, cy, r) {
       const dx = cx - px, dy = cy - py;
       const d = Math.hypot(dx, dy);
@@ -784,7 +780,6 @@
       return [a - o, a + o].map(t => [px + l * Math.cos(t), py + l * Math.sin(t)]);
     }
 
-    // Turkey/Syria layout: card bottom-left, diagonal wedge to the circle
     function alignLeftLayout(pin) {
       const app = document.getElementById('interactive-app');
       const stage = document.querySelector('.stage-view');
@@ -795,10 +790,9 @@
       const wedge = document.getElementById('spotlight-wedge');
       const poly = document.getElementById('spotlight-wedge-poly');
 
-      card.style.transition = 'none';   // so the card is measured at its final size
+      card.style.transition = 'none';
       stack.style.transform = '';
 
-      // Put the circle's own pin exactly over the real map pin
       const gap = pin.offsetHeight - pinImg.offsetHeight;
       const tipX = stage.offsetLeft + pin.offsetLeft;
       const tipY = stage.offsetTop + pin.offsetTop - gap;
@@ -808,8 +802,6 @@
       circle.style.setProperty('--cx', cx + 'px');
       circle.style.setProperty('--cy', cy + 'px');
 
-      // Georgia: hang the card from the circle so the top edge of the wedge
-      // shows above the card and the circle sits inside the wedge
       if (spotlightContainer.classList.contains('anchor-card')) {
         const top = Math.min(cy - 0.17 * circle.offsetWidth, app.offsetHeight - 12 - card.offsetHeight);
         card.style.top = top + 'px';
@@ -819,27 +811,23 @@
         card.style.bottom = '';
       }
 
-      // Wedge: card top-left and bottom-right corners -> circle tangent points
       const r = circle.offsetWidth / 2 - 1;
       const p2 = [card.offsetLeft + card.offsetWidth, card.offsetTop + card.offsetHeight];
       const cardAboveCircle = card.offsetTop < cy - r;
       let p1, t1;
       if (cardAboveCircle) {
-        // Syria: wedge leaves the card's top-right corner and runs into the near side of the circle
         p1 = [card.offsetLeft + card.offsetWidth, card.offsetTop];
         if (spotlightContainer.classList.contains('wedge-outer')) {
-          // Yemen: wedge wraps the circle, touching its outer (right-hand) tangent
           t1 = tangentPoints(p1[0], p1[1], cx, cy, r).sort((a, b) => b[0] - a[0])[0];
         } else {
           const vx = cx - p1[0], vy = cy - p1[1], vd = Math.hypot(vx, vy);
           t1 = [cx - vx / vd * r, cy - vy / vd * r];
         }
       } else {
-        // Turkey, Georgia: wedge leaves the card's top-left corner and touches the circle's upper tangent
         p1 = [card.offsetLeft, card.offsetTop];
         t1 = tangentPoints(p1[0], p1[1], cx, cy, r).sort((a, b) => a[1] - b[1])[0];
       }
-      const t2 = tangentPoints(p2[0], p2[1], cx, cy, r).sort((a, b) => b[0] - a[0])[0]; // right tangent
+      const t2 = tangentPoints(p2[0], p2[1], cx, cy, r).sort((a, b) => b[0] - a[0])[0];
 
       wedge.setAttribute('viewBox', '0 0 ' + app.offsetWidth + ' ' + app.offsetHeight);
       poly.setAttribute('points', [p1, t1, t2, p2].map(p => p.join(',')).join(' '));
@@ -916,7 +904,7 @@
       introModal.classList.remove('active');
     });
 
-    // 3. MAP PINS CLICK (UPDATES REGIONAL MAP ASSET AND LAYOUT CLASS)
+    // 3. MAP PINS CLICK
     document.querySelectorAll('.pin-btn').forEach(pin => {
       pin.addEventListener('click', (e) => {
         const id = e.currentTarget.dataset.id;
@@ -940,7 +928,7 @@
       });
     });
 
-    // 4. CLOSE DIALOG - TRIGGER SWIVEL ANIMATION AND DISABLE REVISITING
+    // 4. CLOSE DIALOG
     document.getElementById('close-dialog-btn').addEventListener('click', () => {
       if (activePin) {
         const pinBtn = activePin;
