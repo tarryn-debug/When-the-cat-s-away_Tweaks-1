@@ -204,10 +204,30 @@
     }
 
     .world-map-svg {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       display: block;
       object-fit: contain;
+      transition: opacity 0.2s ease;
+    }
+
+    .world-map-highlight {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 5;
+    }
+
+    .world-map-highlight.active {
+      opacity: 1;
     }
 
     /* MAP PINS WITH POP-UP & SWIVEL ANIMATIONS */
@@ -488,7 +508,7 @@
     .center-modal {
       background: #ffffff;
       border-radius: 0;
-      padding: 4.5rem 3.5rem 2.5rem; /* Increased top padding to give text ample clearance */
+      padding: 4.5rem 3.5rem 2.5rem;
       text-align: center;
       width: 720px;
       max-width: 92%;
@@ -499,7 +519,7 @@
 
     .modal-badge-graphic {
       position: absolute;
-      top: -60px; /* Shifted up from -42px so icon sits higher over top edge */
+      top: -60px;
       left: 50%;
       transform: translateX(-50%);
       width: 120px;
@@ -620,6 +640,9 @@
       <!-- BASE MAP -->
       <img src="Resources/PastedVector-16.svg" id="main-world-map" alt="World Map" class="world-map-svg">
 
+      <!-- HOVER HIGHLIGHT OVERLAY LAYER -->
+      <img src="" id="map-hover-highlight" alt="Country Highlight" class="world-map-highlight">
+
       <!-- Map Pins -->
       <button class="pin-btn pin-ukraine" data-id="ukraine" aria-label="Ukraine Conflict">
         <img src="Resources/PastedVector-25.svg" alt="Pin" class="pin-img">
@@ -717,42 +740,49 @@
         title: "The invasion of Crimea and eastern Ukraine",
         body: "In 2013, Ukraine’s pro-Russian government suspended the signing of an association agreement with the European Union, sparking mass protests by the pro-European Maidan movement, the Ukrainian revolution and the overthrow of Ukraine’s pro-Russian government. In 2014, Russia took advantage of the internal conflict to impose itself in this part of the former Soviet Union, calculating that the US would not be able to deter it. First, it annexed Crimea, a peninsula in the Black Sea. Protestors in Crimea, backed by disguised Russian soldiers, rejected the new Ukrainian government, seized the local parliament building and organised a referendum, in which, Russia claimed, Crimeans voted overwhelmingly to join Russia. Soon after pro-Russian rebels seized territory in eastern Ukraine with the help of the Russian army, which led to brutal fighting and a humanitarian crisis.",
         mapImg: "Resources/PastedVector-29.svg",
+        highlightImg: "Resources/PastedVector-18.svg",
         layoutClass: ""
       },
       turkey: {
         title: "Turkey’s intervention in Syria",
         body: "In October 2019, Turkey launched an attack in northern Syria, shortly after Donald Trump announced the withdrawal of US troops. This withdrawal left the Syrian Democratic Forces and the Kurds, its main allies in its battle against the Islamic State, without US military support. Turkey claimed the attack was an attempt to prevent a “terror corridor” along its southern border.",
         mapImg: "Resources/PastedVector-37.svg",
+        highlightImg: "Resources/PastedVector-19.svg",
         layoutClass: "layout-left zoom-map"
       },
       syria: {
         title: "Obama’s “red line” in Syria",
         body: "In August 2012, Barack Obama gave a warning to Syria's president that the use of chemical weapons by the Assad government in the country's civil war would cross a “red line”. One year later, opposition-held areas near Damascus were struck by missiles containing sarin gas. Hundreds died. Obama asked for a Congressional resolution to authorise military action in Syria but, against a background of popular opposition to such action, the resolution was never voted on. Instead, Russia negotiated a deal under which Syria agreed to destroy its chemical-weapons stockpile and to join the Chemical Weapons Convention.",
         mapImg: "Resources/PastedVector-35.svg",
+        highlightImg: "Resources/PastedVector-20.svg",
         layoutClass: "layout-left zoom-map"
       },
       georgia: {
         title: "The Russo-Georgian war",
         body: "The relationship between Russia and Georgia has been tense ever since the fall of the Soviet Union and Russia’s annexation of Abkhazia and South Ossetia, two autonomous regions which Georgia and most of the world recognise as part of Georgia but which Russia and a few allies call independent states. In August 2008, after George W. Bush announced his support for Georgia joining NATO, tension boiled over and resulted in a bloody 5-day war between Russia and Georgia. By 2021, Georgia was still not a member of NATO and Russia still controlled Abkhazia and South Ossetia.",
         mapImg: "Resources/PastedVector-31.svg",
+        highlightImg: "Resources/PastedVector-21.svg",
         layoutClass: "layout-left zoom-map anchor-card"
       },
       yemen: {
         title: "War and famine in Yemen",
         body: "In 2014, a long-running conflict between the predominantly Sunni government of Yemen and rebels belonging to the mainly Shia Houthi movement—with links to Iran—erupted into a civil war. After the Houthis captured the capital, the conflict turned into another front in the contest for regional dominance between Iran and Saudi Arabia and another example of the US' inability to restrain military adventurism in the Middle East. The ousted government appealed to the Saudis, who intervened militarily on its side, leading a coalition of eight other countries. Iran, according to a UN report, backed the Houthis with money, training and arms. The US was also caught up in the fighting after one of its warships was attacked by missiles fired, the US said, by the Houthis. Despite ceasefires in 2016 and 2020, the war ground slowly on, leading to a stalemate and what, in 2020, UNICEF called “the largest humanitarian crisis in the world”.",
         mapImg: "Resources/PastedVector-36.svg",
+        highlightImg: "Resources/PastedVector-22.svg",
         layoutClass: "layout-left zoom-map card-wide wedge-outer"
       },
       indiachina: {
         title: "India-China conflict",
         body: "Tensions have been high between these two countries over the contours of their borders for almost half a century. With China’s growing brazenness, things escalated in 2020 when the Indian and Chinese armies clashed at the Galwan Valley, resulting in the brutal killing of 20 Indian soldiers. China claimed that the clash was a reaction to Indian forces carrying out illegal activities.",
         mapImg: "Resources/PastedVector-33.svg",
+        highlightImg: "Resources/PastedVector-23.svg",
         layoutClass: "layout-left zoom-map card-wide"
       },
       southchina: {
         title: "Islands in the South China Sea",
         body: "In 2014, China started constructing artificial islands in the South China Sea. These islands have been transformed into military facilities, projecting China’s military power in the disputed maritime region and pushing back against the US naval presence in the western Pacific. The US and its allies have seen this as destabilising and intimidating.",
         mapImg: "Resources/PastedVector-32.svg",
+        highlightImg: "Resources/PastedVector-28.svg",
         layoutClass: "layout-left zoom-map card-wider"
       }
     };
@@ -766,6 +796,7 @@
     const cardBody = document.getElementById('card-body');
     const spotlightContainer = document.getElementById('spotlight-container');
     const spotlightMapBg = document.getElementById('spotlight-map-bg');
+    const mapHoverHighlight = document.getElementById('map-hover-highlight');
 
     const viewedMap = new Set();
     let activePin = null;
@@ -904,9 +935,24 @@
       introModal.classList.remove('active');
     });
 
-    // 3. MAP PINS CLICK
+    // 3. MAP PINS HOVER & CLICK HANDLERS (HOVER HIGHLIGHTS MAP REGION IN BLUE)
     document.querySelectorAll('.pin-btn').forEach(pin => {
+      pin.addEventListener('mouseenter', (e) => {
+        if (e.currentTarget.classList.contains('viewed')) return;
+        const id = e.currentTarget.dataset.id;
+        const data = regionData[id];
+        if (data && data.highlightImg) {
+          mapHoverHighlight.src = data.highlightImg;
+          mapHoverHighlight.classList.add('active');
+        }
+      });
+
+      pin.addEventListener('mouseleave', () => {
+        mapHoverHighlight.classList.remove('active');
+      });
+
       pin.addEventListener('click', (e) => {
+        mapHoverHighlight.classList.remove('active');
         const id = e.currentTarget.dataset.id;
         const data = regionData[id];
         if (data) {
@@ -928,7 +974,7 @@
       });
     });
 
-    // 4. CLOSE DIALOG
+    // 4. CLOSE DIALOG - TRIGGER SWIVEL ANIMATION AND DISABLE REVISITING
     document.getElementById('close-dialog-btn').addEventListener('click', () => {
       if (activePin) {
         const pinBtn = activePin;
@@ -963,6 +1009,7 @@
 
     document.getElementById('btn-reset').addEventListener('click', () => {
       viewedMap.clear();
+      mapHoverHighlight.classList.remove('active');
       document.querySelectorAll('.pin-btn').forEach(p => {
         p.classList.remove('viewed');
         p.classList.remove('animated');
