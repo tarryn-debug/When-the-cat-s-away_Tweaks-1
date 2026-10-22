@@ -484,13 +484,13 @@
       width: 52.5%;
     }
 
-    /* CENTERED INSTRUCTION CARD MATCHING IMAGE 1 */
+    /* CENTERED INSTRUCTION CARD MATCHING IMAGE 1 EXACTLY */
     .center-modal {
       background: #ffffff;
-      border-radius: 0; /* Sharp corners matching Image 1 */
-      padding: 3.5rem 3.5rem 2.5rem;
+      border-radius: 0;
+      padding: 4.5rem 3.5rem 2.5rem; /* Increased top padding to give text ample clearance */
       text-align: center;
-      width: 720px; /* Widened box so text sits over 3 lines */
+      width: 720px;
       max-width: 92%;
       box-shadow: 0 12px 32px rgba(0,0,0,0.4);
       position: relative;
@@ -499,7 +499,7 @@
 
     .modal-badge-graphic {
       position: absolute;
-      top: -60px;
+      top: -60px; /* Shifted up from -42px so icon sits higher over top edge */
       left: 50%;
       transform: translateX(-50%);
       width: 120px;
@@ -573,7 +573,7 @@
       .btn-start { align-self: center; width: 100%; max-width: 200px; }
       .cover-illustration { width: 60%; }
       .dialog-card { width: 95%; padding: 1.25rem; }
-      .center-modal { width: 92%; padding: 2.5rem 1.5rem 1.5rem; }
+      .center-modal { width: 92%; padding: 3.5rem 1.5rem 1.5rem; }
       .modal-badge-graphic { width: 90px; height: 90px; top: -45px; }
       .spotlight-circle-frame { width: 90px; height: 90px; }
       .spotlight-view-container.layout-left .spotlight-stack { padding-left: 1rem; }
@@ -644,7 +644,7 @@
       </button>
     </main>
 
-    <!-- INTRO OVERLAY MODAL (UPDATED TO Sharp Corners + 3-line Text Width) -->
+    <!-- INTRO OVERLAY MODAL -->
     <div class="dark-overlay" id="intro-modal">
       <div class="center-modal">
         <img src="Resources/PastedVector-34.svg" alt="Instruction House Graphic" class="modal-badge-graphic">
