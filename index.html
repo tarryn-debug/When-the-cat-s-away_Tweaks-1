@@ -514,14 +514,7 @@
       transition: none;
     }
 
-    #intro-modal.active .center-modal {
-      animation: introCardZoom 0.23s cubic-bezier(0.2, 0.8, 0.3, 1) both;
-    }
-
-    @keyframes introCardZoom {
-      from { transform: scale(0.3); }
-      to   { transform: scale(1); }
-    }
+    /* The card zoom (scale 0.3 -> 1) is driven from JS in playIntroZoom() */
 
     /* Pre-warm: while the pins animate, the overlay is painted at ~1% opacity so the browser has already
        rasterised the card and badge. Without this the first paint stalls and the zoom is skipped. */
@@ -822,6 +815,26 @@
     const introBox = document.getElementById('intro-box');
     let introTimers = [];
 
+    // Zooms the intro card from small to full size. Progress advances by at most ~2 frames per tick,
+    // so if the browser stalls on the first paint the zoom still plays out afterwards instead of being skipped.
+    function playIntroZoom() {
+      const card = introModal.querySelector('.center-modal');
+      const DURATION = 230;   // ms of "smooth" playback
+      const START = 0.3;      // starting scale
+      let prog = 0, prev = null;
+      card.style.transform = 'scale(' + START + ')';
+      const step = (now) => {
+        if (prev === null) { prev = now; requestAnimationFrame(step); return; }
+        const dt = Math.min(now - prev, 34);
+        prev = now;
+        prog = Math.min(1, prog + dt / DURATION);
+        const eased = 1 - Math.pow(1 - prog, 3);   // ease-out
+        card.style.transform = prog < 1 ? 'scale(' + (START + (1 - START) * eased) + ')' : '';
+        if (prog < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
     // Tangent points from an external point (px, py) to a circle (cx, cy, r)
     function tangentPoints(px, py, cx, cy, r) {
       const dx = cx - px, dy = cy - py;
@@ -966,8 +979,10 @@
         setTimeout(() => introBox.classList.add('show'), boxDelay),
         setTimeout(() => {
           introBox.classList.remove('show');
+          introModal.querySelector('.center-modal').style.transform = 'scale(0.3)';
           introModal.classList.remove('warm');
           introModal.classList.add('active');
+          playIntroZoom();
         }, boxDelay + boxHold)
       ];
     });
