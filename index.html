@@ -490,43 +490,6 @@
       width: 52.5%;
     }
 
-    /* INTRO ENTRANCE: a translucent box flashes over the pin cluster, then the overlay cuts in and the card zooms up */
-    .intro-box {
-      position: absolute;
-      left: 41.8%;
-      top: 26.8%;
-      width: 25.3%;
-      height: 25.3%;
-      background: rgba(20, 31, 82, 0.44);
-      z-index: 300;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .intro-box.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Overlay appears instantly (no fade in); it still fades out when closed */
-    #intro-modal.active {
-      transition: none;
-    }
-
-    /* The card zoom (scale 0.3 -> 1) is driven from JS in playIntroZoom() */
-
-    /* Pre-warm: while the pins animate, the overlay is painted at ~1% opacity so the browser has already
-       rasterised the card and badge. Without this the first paint stalls and the zoom is skipped. */
-    #intro-modal.warm {
-      opacity: 0.01;
-      transition: none;
-    }
-
-    #intro-modal .center-modal {
-      will-change: transform;
-    }
-
     .center-modal {
       background: #ffffff;
       border-radius: 8px;
@@ -683,9 +646,6 @@
       </button>
     </main>
 
-    <!-- INTRO ENTRANCE BOX -->
-    <div class="intro-box" id="intro-box"></div>
-
     <!-- INTRO OVERLAY MODAL -->
     <div class="dark-overlay" id="intro-modal">
       <div class="center-modal">
@@ -812,28 +772,6 @@
 
     const viewedMap = new Set();
     let activePin = null;
-    const introBox = document.getElementById('intro-box');
-    let introTimers = [];
-
-    // Zooms the intro card from small to full size. Progress advances by at most ~2 frames per tick,
-    // so if the browser stalls on the first paint the zoom still plays out afterwards instead of being skipped.
-    function playIntroZoom() {
-      const card = introModal.querySelector('.center-modal');
-      const DURATION = 230;   // ms of "smooth" playback
-      const START = 0.3;      // starting scale
-      let prog = 0, prev = null;
-      card.style.transform = 'scale(' + START + ')';
-      const step = (now) => {
-        if (prev === null) { prev = now; requestAnimationFrame(step); return; }
-        const dt = Math.min(now - prev, 34);
-        prev = now;
-        prog = Math.min(1, prog + dt / DURATION);
-        const eased = 1 - Math.pow(1 - prog, 3);   // ease-out
-        card.style.transform = prog < 1 ? 'scale(' + (START + (1 - START) * eased) + ')' : '';
-        if (prog < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    }
 
     // Tangent points from an external point (px, py) to a circle (cx, cy, r)
     function tangentPoints(px, py, cx, cy, r) {
@@ -968,23 +906,9 @@
         }, index * 120);
       });
 
-      // After the last pin: box flashes in, holds briefly, then the overlay cuts in and the card zooms up
-      const boxDelay = pins.length * 120 + 500;
-      const boxHold = 230;
-      introTimers.forEach(clearTimeout);
-      introModal.classList.add('warm');
-      const badge = introModal.querySelector('.modal-badge-graphic');
-      if (badge && badge.decode) badge.decode().catch(() => {});
-      introTimers = [
-        setTimeout(() => introBox.classList.add('show'), boxDelay),
-        setTimeout(() => {
-          introBox.classList.remove('show');
-          introModal.querySelector('.center-modal').style.transform = 'scale(0.3)';
-          introModal.classList.remove('warm');
-          introModal.classList.add('active');
-          playIntroZoom();
-        }, boxDelay + boxHold)
-      ];
+      setTimeout(() => {
+        introModal.classList.add('active');
+      }, pins.length * 120 + 300);
     });
 
     // 2. CLICK CONTINUE ON INTRO OVERLAY
@@ -1051,9 +975,6 @@
 
     document.getElementById('btn-reset').addEventListener('click', () => {
       viewedMap.clear();
-      introTimers.forEach(clearTimeout);
-      introBox.classList.remove('show');
-      introModal.classList.remove('warm');
       document.querySelectorAll('.pin-btn').forEach(p => {
         p.classList.remove('viewed');
         p.classList.remove('animated');
