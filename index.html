@@ -204,29 +204,28 @@
     }
 
     .world-map-svg {
-      position: absolute;
-      inset: 0;
       width: 100%;
       height: 100%;
       display: block;
       object-fit: contain;
+    }
+
+    /* HOVER HIGHLIGHT LAYER (same viewBox as the base map, so it always lines up) */
+    .map-highlights {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .map-hl {
+      opacity: 0;
       transition: opacity 0.2s ease;
     }
 
-    .world-map-highlight {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: contain;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      z-index: 5;
-    }
-
-    .world-map-highlight.active {
+    .map-hl.active {
       opacity: 1;
     }
 
@@ -342,7 +341,6 @@
       margin-bottom: -1px;
       z-index: 310;
       pointer-events: none;
-      transition: width 0.3s ease, margin 0.3s ease;
     }
 
     .spotlight-triangle-clip {
@@ -371,7 +369,6 @@
       z-index: 320;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
       background-color: #ffffff;
-      transition: left 0.3s ease, top 0.3s ease;
     }
 
     .spotlight-circle-frame img.spotlight-map-bg {
@@ -405,7 +402,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       position: relative;
       z-index: 315;
-      transition: width 0.3s ease, margin 0.3s ease;
     }
 
     .dialog-card h2 {
@@ -445,73 +441,33 @@
       background: var(--color-bg-light);
     }
 
-    /* LEFT-ALIGNED SPOTLIGHT LAYOUT FOR TURKEY & SYRIA */
-    .spotlight-wedge {
-      display: none;
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
+    /* LEFT-ALIGNED SPOTLIGHT LAYOUT FOR TURKEY/SYRIA */
     .spotlight-view-container.layout-left .spotlight-stack {
-      display: block;
-      padding-left: 0;
-      transform: none !important;
-      transition: none;
+      align-items: flex-start;
+      padding-left: 4.5rem;
     }
 
     .spotlight-view-container.layout-left .dialog-card {
-      position: absolute;
-      left: 6.7%;
-      bottom: 16%;
-      width: 43%;
-      max-width: none;
-      transition: none;
+      width: 480px;
+      max-width: 90%;
     }
 
     .spotlight-view-container.layout-left .spotlight-beam {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      max-width: none;
-      height: 100%;
-      aspect-ratio: auto;
-      margin: 0;
-      transition: none;
+      width: 580px;
+      max-width: 85%;
     }
-
-    .spotlight-view-container.layout-left .spotlight-triangle-clip { display: none; }
-    .spotlight-view-container.layout-left .spotlight-wedge { display: block; }
 
     .spotlight-view-container.layout-left .spotlight-circle-frame {
-      left: var(--cx, 56%);
-      top: var(--cy, 36%);
-      transition: none;
+      top: 32%;
+      left: 62%;
     }
 
-    .spotlight-view-container.layout-left.zoom-map .spotlight-circle-frame img.spotlight-map-bg {
-      transform: scale(1.17);
-      transform-origin: 50.7% 51.7%;
-    }
-
-    .spotlight-view-container.layout-left.card-wide .dialog-card {
-      width: 45%;
-    }
-
-    .spotlight-view-container.layout-left.card-wider .dialog-card {
-      width: 52.5%;
-    }
-
-    /* CENTERED INSTRUCTION CARD MATCHING IMAGE 1 EXACTLY */
     .center-modal {
       background: #ffffff;
-      border-radius: 0;
-      padding: 4.5rem 3.5rem 2.5rem;
+      border-radius: 8px;
+      padding: 3.25rem 2.5rem 2.25rem;
       text-align: center;
-      width: 720px;
-      max-width: 92%;
+      max-width: 520px;
       box-shadow: 0 12px 32px rgba(0,0,0,0.4);
       position: relative;
       margin-top: 2rem;
@@ -519,20 +475,20 @@
 
     .modal-badge-graphic {
       position: absolute;
-      top: -60px;
+      top: -42px;
       left: 50%;
       transform: translateX(-50%);
-      width: 120px;
-      height: 120px;
+      width: 84px;
+      height: 84px;
       z-index: 10;
     }
 
     .center-modal h2 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #222222;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
       font-weight: 400;
-      line-height: 1.65;
+      line-height: 1.6;
     }
 
     .action-btn {
@@ -593,13 +549,8 @@
       .btn-start { align-self: center; width: 100%; max-width: 200px; }
       .cover-illustration { width: 60%; }
       .dialog-card { width: 95%; padding: 1.25rem; }
-      .center-modal { width: 92%; padding: 3.5rem 1.5rem 1.5rem; }
-      .modal-badge-graphic { width: 90px; height: 90px; top: -45px; }
       .spotlight-circle-frame { width: 90px; height: 90px; }
       .spotlight-view-container.layout-left .spotlight-stack { padding-left: 1rem; }
-      .spotlight-view-container.layout-left .dialog-card { width: 90%; left: 5%; }
-      .spotlight-view-container.layout-left.card-wide .dialog-card,
-      .spotlight-view-container.layout-left.card-wider .dialog-card { width: 90%; }
     }
   </style>
 </head>
@@ -640,8 +591,16 @@
       <!-- BASE MAP -->
       <img src="Resources/PastedVector-16.svg" id="main-world-map" alt="World Map" class="world-map-svg">
 
-      <!-- HOVER HIGHLIGHT OVERLAY LAYER -->
-      <img src="" id="map-hover-highlight" alt="Country Highlight" class="world-map-highlight">
+      <!-- HOVER HIGHLIGHTS (positioned in map coordinates: 1112.8 x 498.4) -->
+      <svg class="map-highlights" viewBox="0 0 1112.8 498.4" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <image id="hl-ukraine"    class="map-hl" href="Resources/PastedVector-18.svg" x="589.3" y="96.7"  width="52.1" height="29.2"/>
+        <image id="hl-turkey"     class="map-hl" href="Resources/PastedVector-19.svg" x="603.3" y="134.3" width="60.2" height="23.6"/>
+        <image id="hl-syria"      class="map-hl" href="Resources/PastedVector-20.svg" x="634.5" y="153"   width="20"   height="19"/>
+        <image id="hl-georgia"    class="map-hl" href="Resources/PastedVector-21.svg" x="651"   y="133.5" width="22.1" height="9.5"/>
+        <image id="hl-yemen"      class="map-hl" href="Resources/PastedVector-22.svg" x="664.5" y="219.8" width="34.1" height="24.2"/>
+        <image id="hl-indiachina" class="map-hl" href="Resources/PastedVector-23.svg" x="769"   y="155.6" width="15.5" height="20.4"/>
+        <image id="hl-southchina" class="map-hl" href="Resources/PastedVector-28.svg" x="876"   y="198"   width="54.6" height="84.1"/>
+      </svg>
 
       <!-- Map Pins -->
       <button class="pin-btn pin-ukraine" data-id="ukraine" aria-label="Ukraine Conflict">
@@ -676,7 +635,7 @@
       </div>
     </div>
 
-    <!-- SPOTLIGHT OVERLAY MODAL FOR UKRAINE -->
+    <!-- SPOTLIGHT OVERLAY MODAL -->
     <div class="dark-overlay" id="content-modal">
       <div class="spotlight-view-container" id="spotlight-container">
         <div class="spotlight-stack" id="spotlight-stack">
@@ -686,10 +645,6 @@
             <div class="spotlight-triangle-clip">
               <img src="Resources/PastedVector-30.svg" alt="" class="spotlight-triangle-bg">
             </div>
-
-            <svg class="spotlight-wedge" id="spotlight-wedge" aria-hidden="true">
-              <polygon id="spotlight-wedge-poly" fill="#141F52"></polygon>
-            </svg>
 
             <!-- CIRCULAR SPOTLIGHT FRAME -->
             <div class="spotlight-circle-frame" id="spotlight-circle">
@@ -740,50 +695,43 @@
         title: "The invasion of Crimea and eastern Ukraine",
         body: "In 2013, Ukraine’s pro-Russian government suspended the signing of an association agreement with the European Union, sparking mass protests by the pro-European Maidan movement, the Ukrainian revolution and the overthrow of Ukraine’s pro-Russian government. In 2014, Russia took advantage of the internal conflict to impose itself in this part of the former Soviet Union, calculating that the US would not be able to deter it. First, it annexed Crimea, a peninsula in the Black Sea. Protestors in Crimea, backed by disguised Russian soldiers, rejected the new Ukrainian government, seized the local parliament building and organised a referendum, in which, Russia claimed, Crimeans voted overwhelmingly to join Russia. Soon after pro-Russian rebels seized territory in eastern Ukraine with the help of the Russian army, which led to brutal fighting and a humanitarian crisis.",
         mapImg: "Resources/PastedVector-29.svg",
-        highlightImg: "Resources/PastedVector-18.svg",
         layoutClass: ""
       },
       turkey: {
         title: "Turkey’s intervention in Syria",
         body: "In October 2019, Turkey launched an attack in northern Syria, shortly after Donald Trump announced the withdrawal of US troops. This withdrawal left the Syrian Democratic Forces and the Kurds, its main allies in its battle against the Islamic State, without US military support. Turkey claimed the attack was an attempt to prevent a “terror corridor” along its southern border.",
         mapImg: "Resources/PastedVector-37.svg",
-        highlightImg: "Resources/PastedVector-19.svg",
-        layoutClass: "layout-left zoom-map"
+        layoutClass: "layout-left"
       },
       syria: {
         title: "Obama’s “red line” in Syria",
         body: "In August 2012, Barack Obama gave a warning to Syria's president that the use of chemical weapons by the Assad government in the country's civil war would cross a “red line”. One year later, opposition-held areas near Damascus were struck by missiles containing sarin gas. Hundreds died. Obama asked for a Congressional resolution to authorise military action in Syria but, against a background of popular opposition to such action, the resolution was never voted on. Instead, Russia negotiated a deal under which Syria agreed to destroy its chemical-weapons stockpile and to join the Chemical Weapons Convention.",
-        mapImg: "Resources/PastedVector-35.svg",
-        highlightImg: "Resources/PastedVector-20.svg",
-        layoutClass: "layout-left zoom-map"
+        mapImg: "Resources/PastedVector-37.svg",
+        layoutClass: "layout-left"
       },
       georgia: {
         title: "The Russo-Georgian war",
         body: "The relationship between Russia and Georgia has been tense ever since the fall of the Soviet Union and Russia’s annexation of Abkhazia and South Ossetia, two autonomous regions which Georgia and most of the world recognise as part of Georgia but which Russia and a few allies call independent states. In August 2008, after George W. Bush announced his support for Georgia joining NATO, tension boiled over and resulted in a bloody 5-day war between Russia and Georgia. By 2021, Georgia was still not a member of NATO and Russia still controlled Abkhazia and South Ossetia.",
-        mapImg: "Resources/PastedVector-31.svg",
-        highlightImg: "Resources/PastedVector-21.svg",
-        layoutClass: "layout-left zoom-map anchor-card"
+        mapImg: "Resources/PastedVector-29.svg",
+        layoutClass: ""
       },
       yemen: {
         title: "War and famine in Yemen",
-        body: "In 2014, a long-running conflict between the predominantly Sunni government of Yemen and rebels belonging to the mainly Shia Houthi movement—with links to Iran—erupted into a civil war. After the Houthis captured the capital, the conflict turned into another front in the contest for regional dominance between Iran and Saudi Arabia and another example of the US' inability to restrain military adventurism in the Middle East. The ousted government appealed to the Saudis, who intervened militarily on its side, leading a coalition of eight other countries. Iran, according to a UN report, backed the Houthis with money, training and arms. The US was also caught up in the fighting after one of its warships was attacked by missiles fired, the US said, by the Houthis. Despite ceasefires in 2016 and 2020, the war ground slowly on, leading to a stalemate and what, in 2020, UNICEF called “the largest humanitarian crisis in the world”.",
-        mapImg: "Resources/PastedVector-36.svg",
-        highlightImg: "Resources/PastedVector-22.svg",
-        layoutClass: "layout-left zoom-map card-wide wedge-outer"
+        body: "In 2014, a long-running conflict between the predominantly Sunni government of Yemen and rebels belonging to the mainly Shia Houthi movement—with links to Iran—erupted into a civil war. After the Houthis captured the capital, the conflict turned into another front in the contest for regional dominance between Iran and Saudi Arabia and another example of the US' inability to restrain military adventurism in the Middle East.",
+        mapImg: "Resources/PastedVector-29.svg",
+        layoutClass: ""
       },
       indiachina: {
         title: "India-China conflict",
         body: "Tensions have been high between these two countries over the contours of their borders for almost half a century. With China’s growing brazenness, things escalated in 2020 when the Indian and Chinese armies clashed at the Galwan Valley, resulting in the brutal killing of 20 Indian soldiers. China claimed that the clash was a reaction to Indian forces carrying out illegal activities.",
-        mapImg: "Resources/PastedVector-33.svg",
-        highlightImg: "Resources/PastedVector-23.svg",
-        layoutClass: "layout-left zoom-map card-wide"
+        mapImg: "Resources/PastedVector-29.svg",
+        layoutClass: ""
       },
       southchina: {
         title: "Islands in the South China Sea",
         body: "In 2014, China started constructing artificial islands in the South China Sea. These islands have been transformed into military facilities, projecting China’s military power in the disputed maritime region and pushing back against the US naval presence in the western Pacific. The US and its allies have seen this as destabilising and intimidating.",
-        mapImg: "Resources/PastedVector-32.svg",
-        highlightImg: "Resources/PastedVector-28.svg",
-        layoutClass: "layout-left zoom-map card-wider"
+        mapImg: "Resources/PastedVector-29.svg",
+        layoutClass: ""
       }
     };
 
@@ -796,83 +744,12 @@
     const cardBody = document.getElementById('card-body');
     const spotlightContainer = document.getElementById('spotlight-container');
     const spotlightMapBg = document.getElementById('spotlight-map-bg');
-    const mapHoverHighlight = document.getElementById('map-hover-highlight');
 
     const viewedMap = new Set();
     let activePin = null;
 
-    function tangentPoints(px, py, cx, cy, r) {
-      const dx = cx - px, dy = cy - py;
-      const d = Math.hypot(dx, dy);
-      if (d <= r) return [[cx, cy], [cx, cy]];
-      const a = Math.atan2(dy, dx);
-      const o = Math.asin(r / d);
-      const l = Math.sqrt(d * d - r * r);
-      return [a - o, a + o].map(t => [px + l * Math.cos(t), py + l * Math.sin(t)]);
-    }
-
-    function alignLeftLayout(pin) {
-      const app = document.getElementById('interactive-app');
-      const stage = document.querySelector('.stage-view');
-      const stack = document.getElementById('spotlight-stack');
-      const circle = document.getElementById('spotlight-circle');
-      const card = document.querySelector('.dialog-card');
-      const pinImg = pin.querySelector('.pin-img');
-      const wedge = document.getElementById('spotlight-wedge');
-      const poly = document.getElementById('spotlight-wedge-poly');
-
-      card.style.transition = 'none';
-      stack.style.transform = '';
-
-      const gap = pin.offsetHeight - pinImg.offsetHeight;
-      const tipX = stage.offsetLeft + pin.offsetLeft;
-      const tipY = stage.offsetTop + pin.offsetTop - gap;
-      const size = circle.clientWidth;
-      const cx = tipX - (0.508 - 0.5) * size;
-      const cy = tipY - (0.531 - 0.5) * size;
-      circle.style.setProperty('--cx', cx + 'px');
-      circle.style.setProperty('--cy', cy + 'px');
-
-      if (spotlightContainer.classList.contains('anchor-card')) {
-        const top = Math.min(cy - 0.17 * circle.offsetWidth, app.offsetHeight - 12 - card.offsetHeight);
-        card.style.top = top + 'px';
-        card.style.bottom = 'auto';
-      } else {
-        card.style.top = '';
-        card.style.bottom = '';
-      }
-
-      const r = circle.offsetWidth / 2 - 1;
-      const p2 = [card.offsetLeft + card.offsetWidth, card.offsetTop + card.offsetHeight];
-      const cardAboveCircle = card.offsetTop < cy - r;
-      let p1, t1;
-      if (cardAboveCircle) {
-        p1 = [card.offsetLeft + card.offsetWidth, card.offsetTop];
-        if (spotlightContainer.classList.contains('wedge-outer')) {
-          t1 = tangentPoints(p1[0], p1[1], cx, cy, r).sort((a, b) => b[0] - a[0])[0];
-        } else {
-          const vx = cx - p1[0], vy = cy - p1[1], vd = Math.hypot(vx, vy);
-          t1 = [cx - vx / vd * r, cy - vy / vd * r];
-        }
-      } else {
-        p1 = [card.offsetLeft, card.offsetTop];
-        t1 = tangentPoints(p1[0], p1[1], cx, cy, r).sort((a, b) => a[1] - b[1])[0];
-      }
-      const t2 = tangentPoints(p2[0], p2[1], cx, cy, r).sort((a, b) => b[0] - a[0])[0];
-
-      wedge.setAttribute('viewBox', '0 0 ' + app.offsetWidth + ' ' + app.offsetHeight);
-      poly.setAttribute('points', [p1, t1, t2, p2].map(p => p.join(',')).join(' '));
-
-      card.style.transition = '';
-    }
-
     function alignSpotlightToPin(pin) {
       if (!pin) return;
-      if (spotlightContainer.classList.contains('layout-left')) {
-        alignLeftLayout(pin);
-        return;
-      }
-
       const app = document.getElementById('interactive-app');
       const stage = document.querySelector('.stage-view');
       const stack = document.getElementById('spotlight-stack');
@@ -880,8 +757,6 @@
       const card = document.querySelector('.dialog-card');
       const pinImg = pin.querySelector('.pin-img');
 
-      card.style.top = '';
-      card.style.bottom = '';
       stack.style.transform = '';
       circle.style.setProperty('--dx', '0px');
 
@@ -935,24 +810,9 @@
       introModal.classList.remove('active');
     });
 
-    // 3. MAP PINS HOVER & CLICK HANDLERS (HOVER HIGHLIGHTS MAP REGION IN BLUE)
+    // 3. MAP PINS CLICK (UPDATES REGIONAL MAP ASSET AND LAYOUT CLASS)
     document.querySelectorAll('.pin-btn').forEach(pin => {
-      pin.addEventListener('mouseenter', (e) => {
-        if (e.currentTarget.classList.contains('viewed')) return;
-        const id = e.currentTarget.dataset.id;
-        const data = regionData[id];
-        if (data && data.highlightImg) {
-          mapHoverHighlight.src = data.highlightImg;
-          mapHoverHighlight.classList.add('active');
-        }
-      });
-
-      pin.addEventListener('mouseleave', () => {
-        mapHoverHighlight.classList.remove('active');
-      });
-
       pin.addEventListener('click', (e) => {
-        mapHoverHighlight.classList.remove('active');
         const id = e.currentTarget.dataset.id;
         const data = regionData[id];
         if (data) {
@@ -1009,7 +869,6 @@
 
     document.getElementById('btn-reset').addEventListener('click', () => {
       viewedMap.clear();
-      mapHoverHighlight.classList.remove('active');
       document.querySelectorAll('.pin-btn').forEach(p => {
         p.classList.remove('viewed');
         p.classList.remove('animated');
@@ -1028,6 +887,24 @@
         window.close();
       }
     });
+
+    // 6. HOVER HIGHLIGHT FOR MAP PINS
+    (function () {
+      const hl = id => document.getElementById('hl-' + id);
+      document.querySelectorAll('.pin-btn').forEach(pin => {
+        const id = pin.dataset.id;
+        const on  = () => { if (!pin.classList.contains('viewed')) hl(id).classList.add('active'); };
+        const off = () => hl(id).classList.remove('active');
+        pin.addEventListener('mouseenter', on);
+        pin.addEventListener('focus', on);
+        pin.addEventListener('mouseleave', off);
+        pin.addEventListener('blur', off);
+        pin.addEventListener('click', off);
+      });
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        document.querySelectorAll('.map-hl').forEach(el => el.classList.remove('active'));
+      });
+    })();
   </script>
 </body>
 </html>
