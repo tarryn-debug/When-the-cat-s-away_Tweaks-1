@@ -597,13 +597,20 @@
 
       <!-- HOVER HIGHLIGHTS (positioned in map coordinates: 1112.8 x 498.4) -->
       <svg class="map-highlights" viewBox="0 0 1112.8 498.4" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <!-- Recolours the South China Sea overlay to #475ED1 (keeps the shape) -->
+          <filter id="tint-southchina" color-interpolation-filters="sRGB">
+            <feFlood flood-color="#475ED1" result="c"/>
+            <feComposite in="c" in2="SourceAlpha" operator="in"/>
+          </filter>
+        </defs>
         <image id="hl-ukraine"    class="map-hl" href="Resources/PastedVector-18.svg" x="589.3" y="96.7"  width="52.1" height="29.2"/>
         <image id="hl-turkey"     class="map-hl" href="Resources/PastedVector-19.svg" x="603.3" y="134.3" width="60.2" height="23.6"/>
         <image id="hl-syria"      class="map-hl" href="Resources/PastedVector-20.svg" x="634.5" y="153"   width="20"   height="19"/>
         <image id="hl-georgia"    class="map-hl" href="Resources/PastedVector-21.svg" x="651"   y="133.5" width="22.1" height="9.5"/>
         <image id="hl-yemen"      class="map-hl" href="Resources/PastedVector-22.svg" x="664.5" y="219.8" width="34.1" height="24.2"/>
         <image id="hl-indiachina" class="map-hl" href="Resources/PastedVector-23.svg" x="769"   y="155.6" width="15.5" height="20.4"/>
-        <image id="hl-southchina" class="map-hl" href="Resources/PastedVector-28.svg" x="878.5" y="193"   width="54.6" height="84.1"/>
+        <image id="hl-southchina" class="map-hl" href="Resources/PastedVector-28.svg" x="875.8" y="189"   width="54.6" height="84.1" filter="url(#tint-southchina)"/>
       </svg>
 
       <!-- Map Pins -->
