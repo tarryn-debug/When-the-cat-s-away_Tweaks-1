@@ -233,6 +233,16 @@
       opacity: 0.2;
     }
 
+    /* RED LEADER LINE FROM THE INDIA-CHINA PIN TO THE BORDER LINE */
+    .map-leader {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .map-leader.show {
+      opacity: 1;
+    }
+
     /* MAP PINS WITH POP-UP & SWIVEL ANIMATIONS */
     .pin-btn {
       position: absolute;
@@ -293,7 +303,7 @@
     .pin-georgia    { top: 30.1%; left: 59.0%; }
     .pin-syria      { top: 34.7%; left: 58.1%; }
     .pin-yemen      { top: 47.3%; left: 61.1%; }
-    .pin-indiachina { top: 35.2%; left: 69.8%; }
+    .pin-indiachina { top: 33.8%; left: 69.9%; }
     .pin-southchina { top: 47.3%; left: 80.9%; }
 
     /* ========================================================= */
@@ -611,6 +621,7 @@
         <image id="hl-yemen"      class="map-hl" href="Resources/PastedVector-22.svg" x="664.5" y="219.8" width="34.1" height="24.2"/>
         <image id="hl-indiachina" class="map-hl" href="Resources/PastedVector-23.svg" x="769"   y="155.6" width="15.5" height="20.4"/>
         <image id="hl-southchina" class="map-hl" href="Resources/PastedVector-28.svg" x="875.8" y="189"   width="54.6" height="84.1" filter="url(#tint-southchina)"/>
+        <polyline id="leader-indiachina" class="map-leader" points="778,156 777.7,160.9 775,163.6" fill="none" stroke="#E3120B" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
 
       <!-- Map Pins -->
@@ -915,6 +926,13 @@
       document.getElementById('btn-reset').addEventListener('click', () => {
         document.querySelectorAll('.map-hl').forEach(el => el.classList.remove('active'));
       });
+
+      // Show the India-China leader line whenever its pin is showing
+      const icPin = document.querySelector('.pin-indiachina');
+      const icLeader = document.getElementById('leader-indiachina');
+      const syncLeader = () => icLeader.classList.toggle('show', icPin.classList.contains('animated'));
+      new MutationObserver(syncLeader).observe(icPin, { attributes: true, attributeFilter: ['class'] });
+      syncLeader();
     })();
   </script>
 </body>
